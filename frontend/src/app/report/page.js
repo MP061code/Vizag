@@ -1,11 +1,12 @@
 "use client";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ReportPage() {
+  const router = useRouter();
+
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const fileRef = useRef();
 
   const handleSubmit = (e) => {
@@ -14,61 +15,54 @@ export default function ReportPage() {
     const file = fileRef.current.files[0];
 
     if (!file || !description) {
-      setMessage("⚠️ Please upload image and enter description");
+      setMessage("⚠️ Fill all fields");
       return;
     }
 
-    setLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Image:", file);
-      console.log("Description:", description);
-
-      setMessage("✅ Complaint submitted successfully!");
-      setDescription("");
-      fileRef.current.value = "";
-      setLoading(false);
-    }, 1000);
+    setMessage("✅ Complaint submitted!");
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-5">
-      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          Report Garbage ♻️
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-5">
+
+      {/* Back Button */}
+      <button
+        onClick={() => router.push("/")}
+        className="mb-4 text-blue-600 font-semibold"
+      >
+        ← Back
+      </button>
+
+      <div className="bg-white p-6 rounded-xl shadow max-w-md mx-auto">
+
+        <h1 className="text-xl font-bold mb-4 text-gray-800 text-center">
+          📸 Report Garbage
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Image Upload */}
-          <input
-            type="file"
-            ref={fileRef}
-            className="w-full border p-2 rounded"
-          />
+          <input type="file" ref={fileRef} className="w-full border p-2 rounded" />
 
-          {/* Description */}
           <textarea
-            placeholder="Describe the issue..."
+            placeholder="Describe issue"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full border p-2 rounded"
           />
 
-          {/* Button */}
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
-          >
-            {loading ? "Submitting..." : "Submit Complaint"}
+          {/* Location */}
+          <input
+            type="text"
+            placeholder="Enter location manually"
+            className="w-full border p-2 rounded"
+          />
+
+          <button className="w-full bg-green-600 text-white p-2 rounded">
+            Submit
           </button>
         </form>
 
-        {/* Message */}
-        {message && (
-          <p className="mt-4 text-center text-sm">{message}</p>
-        )}
+        {message && <p className="mt-3 text-center">{message}</p>}
       </div>
     </div>
   );
