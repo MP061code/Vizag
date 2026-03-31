@@ -1,44 +1,34 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function StatusPage() {
-  const router = useRouter();
-  const [complaints, setComplaints] = useState([]);
+  const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    setComplaints([
-      { id: 1, text: "Garbage near beach", status: "Pending", time: 20 },
-      { id: 2, text: "Dustbin overflow", status: "Done", time: 0 },
-    ]);
+    let data = JSON.parse(localStorage.getItem("reports")) || [];
+
+    // Auto update status
+    data = data.map(r => {
+      if (r.status === "Pending") r.status = "In Progress";
+      else if (r.status === "In Progress") r.status = "Done";
+      return r;
+    });
+
+    localStorage.setItem("reports", JSON.stringify(data));
+    setReports(data);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-green-100 p-5">
+    <div className="p-5">
+      <h1 className="text-xl font-bold mb-4">📊 Status</h1>
 
-      {/* Back */}
-      <button
-        onClick={() => router.push("/")}
-        className="mb-4 text-blue-600 font-semibold"
-      >
-        ← Back
-      </button>
-
-      <h1 className="text-2xl font-bold text-center mb-4">
-        📊 Status
-      </h1>
-
-      <div className="space-y-4 max-w-md mx-auto">
-        {complaints.map((c) => (
-          <div key={c.id} className="bg-white p-4 rounded shadow">
-            <h3 className="font-bold">{c.text}</h3>
-            <p>Status: {c.status}</p>
-            {c.status === "Pending" && (
-              <p>⏱️ {c.time} mins left</p>
-            )}
-          </div>
-        ))}
-      </div>
+      {reports.map(r => (
+        <div key={r.id} className="border p-3 mb-3 rounded">
+          <p><b>{r.description}</b></p>
+          <p>Status: {r.status}</p>
+          <p>Priority: {r.priority}</p>
+        </div>
+      ))}
     </div>
   );
 }
