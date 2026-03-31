@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import "leaflet/dist/leaflet.css";
 
 const MapContainer = dynamic(() => import("react-leaflet").then(m => m.MapContainer), { ssr: false });
@@ -10,6 +11,7 @@ const Popup = dynamic(() => import("react-leaflet").then(m => m.Popup), { ssr: f
 
 export default function MapPage() {
   const [reports, setReports] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("reports")) || [];
@@ -17,17 +19,28 @@ export default function MapPage() {
   }, []);
 
   return (
-    <MapContainer center={[17.6868, 83.2185]} zoom={13} style={{ height: "100vh" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <div className="relative">
 
-      {reports.map(r => (
-        <Marker key={r.id} position={[r.lat, r.lng]}>
-          <Popup>
-            {r.description} <br />
-            Status: {r.status}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+      {/* BACK BUTTON */}
+      <button
+        onClick={() => router.push("/dashboard")}
+        className="absolute top-4 left-4 z-[1000] bg-white p-2 rounded shadow"
+      >
+        ← Back
+      </button>
+
+      <MapContainer center={[17.6868, 83.2185]} zoom={13} style={{ height: "100vh" }}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {reports.map(r => (
+          <Marker key={r.id} position={[r.lat, r.lng]}>
+            <Popup>
+              {r.description} <br />
+              Status: {r.status}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }

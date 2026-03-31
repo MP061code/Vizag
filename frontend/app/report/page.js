@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 
 export default function ReportPage() {
   const router = useRouter();
-
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const fileRef = useRef();
@@ -18,7 +17,6 @@ export default function ReportPage() {
       return;
     }
 
-    // Duplicate check
     const existing = JSON.parse(localStorage.getItem("reports")) || [];
     const duplicate = existing.find(r => r.description === description);
 
@@ -27,7 +25,6 @@ export default function ReportPage() {
       return;
     }
 
-    // Priority logic
     let priority = "Low";
     if (description.includes("hospital") || description.includes("school")) {
       priority = "High";
@@ -38,41 +35,46 @@ export default function ReportPage() {
       description,
       status: "Pending",
       priority,
-      location: "Vizag",
       lat: 17.6868,
       lng: 83.2185,
     };
 
     localStorage.setItem("reports", JSON.stringify([...existing, newReport]));
 
-    setMessage("✅ Report submitted! You helped clean 🌱");
+    setMessage("✅ Report submitted!");
 
     setTimeout(() => router.push("/dashboard"), 1000);
   };
 
   return (
-    <div className="min-h-screen p-5">
-      <button onClick={() => router.push("/dashboard")}>← Back</button>
+    <div className="min-h-screen p-5 bg-gray-100">
 
-      <div className="bg-white p-6 rounded-xl max-w-md mx-auto">
-        <h1 className="text-xl font-bold mb-4">📸 Report Garbage</h1>
+      <button
+        onClick={() => router.push("/dashboard")}
+        className="mb-4 text-blue-600 font-semibold"
+      >
+        ← Back to Dashboard
+      </button>
+
+      <div className="bg-white p-6 rounded-xl max-w-md mx-auto shadow">
+        <h1 className="text-xl font-bold mb-4 text-center">📸 Report Garbage</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="file" ref={fileRef} className="w-full border p-2" />
+          <input type="file" ref={fileRef} className="w-full border p-2 rounded" />
 
           <textarea
             placeholder="Describe issue"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border p-2"
+            className="w-full border p-2 rounded"
           />
 
-          <button className="w-full bg-green-600 text-white p-2">
+          <button className="w-full bg-green-600 text-white p-2 rounded">
             Submit
           </button>
         </form>
 
-        {message && <p className="mt-3">{message}</p>}
+        {message && <p className="mt-3 text-center">{message}</p>}
       </div>
     </div>
   );
